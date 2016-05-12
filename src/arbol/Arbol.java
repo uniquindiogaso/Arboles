@@ -5,6 +5,10 @@
  */
 package arbol;
 
+import java.util.LinkedHashSet;
+import java.util.Random;
+import java.util.Set;
+
 /**
  *
  * @author Admin
@@ -15,41 +19,49 @@ public class Arbol {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        ArbolBinario aBinario = new ArbolBinario();
-        
-        //int numeros[] = {1,2,3,4,8,90,10,51,20,45,10,30,150};
-        
-        
-        int numeros[] = {16,69,72,33,57,36,18,47,11,23};
-        
-        for (int i = 0; i < numeros.length; i++) {
-           aBinario.insertar(numeros[i]);
+
+        int NUMEROS_REQUERIDOS = 10;
+        int NUMERO_MAXIMO = 10;
+
+        Random rng = new Random();
+        Set<Integer> generated = new LinkedHashSet<Integer>();
+
+        while (generated.size() < NUMEROS_REQUERIDOS) {
+            Integer next = rng.nextInt(NUMERO_MAXIMO) + 1;
+            // As we're adding to a set, this will automatically do a containment check
+            generated.add(next);
         }
-        
-          
+
+        ArbolBinario aBinario = new ArbolBinario();
+
+        //int numeros[] = {1,2,3,4,8,90,10,51,20,45,10,30,150};
+        Object numeros[] = generated.toArray();
+
+        for (Object numero : numeros) {
+            aBinario.insertar(numero);
+        }
+
         aBinario.imprimirArbolBinario(aBinario.getRaiz(), 0);
+
+//        aBinario.inOrden();
+//        System.out.println("************************ ");
+//        aBinario.posOrden();
+//        System.out.println("************************ ");
+//        aBinario.preOrden();        
+//        System.out.println("************************ ");
+//        
+        System.out.println("-> Peso = " + aBinario.getPeso());
+        System.out.println("-> Numero de Hojas = " + aBinario.getHojas());
+        System.out.println("-> Numero de Nodos Internos = " + aBinario.getNodosInternos());
+        System.out.println("-> Sumatoria Elementos = " + aBinario.getSumatoria());
+        System.out.println("-> Elemento Existe? = " + aBinario.existe(3));
         
-        aBinario.inOrden();
-        System.out.println("************************ ");
-        aBinario.posOrden();
-        System.out.println("************************ ");
-        aBinario.preOrden();
-        
-        System.out.println("************************ ");
-        System.out.println("aBinario.getPeso() = " + aBinario.getPeso());
-        System.out.println(" " + aBinario.getHojas());
         
         /**
-         * Nodos Hojas
-         * Nodos Internos
-         * Peso
-         * Suma 
-         * Eliminar
-         * Si existe
-         * 
+         * Nodos Hojas X Nodos Internos x Peso x Suma x Eliminar Si existe
+         *
          * Clase principal con elementos a modo random
          */
-        
     }
-    
+
 }

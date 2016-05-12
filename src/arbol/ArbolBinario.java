@@ -10,6 +10,8 @@ public class ArbolBinario<T> {
     private Nodo raiz;
     private int peso;
     private int hojas;
+    private int nodosInternos;
+    private int sumatoria;
 
     public ArbolBinario() {
         peso = 0;
@@ -128,20 +130,54 @@ public class ArbolBinario<T> {
 
     private void numHoja(Nodo nodo) {
         if (nodo == null) {
-            hojas++;
             return;
         }
-        if (nodo.getIzquierda() == null) {
+        //Si Nodo no tiene hijos tanto en la izq como en la derecha aumente conteo
+        if (nodo.getIzquierda() == null && nodo.getDerecha() == null) {
             hojas++;
-           
-        }else{
-             numHoja(nodo.getIzquierda());
+        } else {
+            numHoja(nodo.getIzquierda());
+            numHoja(nodo.getDerecha());
+        }
+    }
+
+    private void numNodosInternos(Nodo nodo) {
+        if (nodo == null) {
+            return;
         }
 
-        if (nodo.getDerecha() == null) {
-            hojas++;           
+        if (nodo.getDerecha() != null || nodo.getIzquierda() != null) {
+            nodosInternos++;
+            numNodosInternos(nodo.getDerecha());
+            numNodosInternos(nodo.getIzquierda());
+        }
+    }
+
+    private void sumatoria(Nodo nodo) {
+        if (nodo == null) {
+            return;
+        }
+        sumatoria(nodo.getIzquierda());
+        sumatoria(nodo.getDerecha());
+        
+        if(nodo.getValor() instanceof Number){
+            sumatoria += ((Number) nodo.getValor()).intValue();
         }else{
-            numHoja(nodo.getDerecha());
+            System.err.println("Solo se pueden sumar numeros");
+            return;
+        }       
+        
+    }
+    
+    private boolean elementoExiste(Nodo nodo , T elemento){
+        if (nodo == null){
+            return false;
+        }else{
+            if (nodo.getValor() == elemento){
+                return true;
+            }else{
+                return elementoExiste(nodo.getDerecha(),elemento);
+            }
         }
     }
 
@@ -185,12 +221,26 @@ public class ArbolBinario<T> {
     }
 
     public int getHojas() {
+        numHoja(raiz);
         return hojas;
     }
 
-    public void setHojas(int hojas) {
-        this.hojas = hojas;
+
+
+    public int getNodosInternos() {
+        numNodosInternos(raiz);
+        return nodosInternos;
     }
 
+
+    public int getSumatoria() {
+        sumatoria(raiz);
+        return sumatoria;
+    }
+
+    
+    public boolean existe(T elemento){
+        return elementoExiste(raiz, elemento);
+    }
     
 }
