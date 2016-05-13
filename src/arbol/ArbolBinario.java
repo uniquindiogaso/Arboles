@@ -5,7 +5,7 @@ package arbol;
  * @author Admin
  * @param <T>
  */
-public class ArbolBinario<T> {
+public class ArbolBinario<T extends Comparable> {
 
     private Nodo raiz;
     private int peso;
@@ -153,32 +153,88 @@ public class ArbolBinario<T> {
         }
     }
 
-    private void sumatoria(Nodo nodo) {
-        if (nodo == null) {
-            return;
+    public Double obtenerSumatoria() {
+        Double res = 0.0;
+        try {
+            Number claseNumerica = (Number) raiz.getValor();
+
+            res = sumatoria(raiz);
+        } catch (ClassCastException e) {
+            System.err.println("Solo se permiten sumatorias de elementos numericos");
         }
-        sumatoria(nodo.getIzquierda());
-        sumatoria(nodo.getDerecha());
-        
-        if(nodo.getValor() instanceof Number){
-            sumatoria += ((Number) nodo.getValor()).intValue();
-        }else{
-            System.err.println("Solo se pueden sumar numeros");
-            return;
-        }       
-        
+
+        return res;
+
     }
-    
-    private boolean elementoExiste(Nodo nodo , T elemento){
-        if (nodo == null){
-            return false;
-        }else{
-            if (nodo.getValor() == elemento){
+
+    private Double sumatoria(Nodo nodo) {
+//        if (nodo == null) {
+//            return;
+//        }
+//        sumatoria(nodo.getIzquierda());
+//        sumatoria(nodo.getDerecha());
+//        
+//        if(nodo.getValor() instanceof Number){
+//            sumatoria += ((Number) nodo.getValor()).intValue();
+//        }else{
+//            System.err.println("Solo se pueden sumar numeros");
+//            return;
+//        }       
+
+        if (nodo == null) {
+            return 0.0;
+        }
+        return (sumatoria(nodo.getIzquierda()) + sumatoria(nodo.getDerecha()) + ((Number) nodo.getValor()).doubleValue());
+
+    }
+
+    private boolean elementoExiste(Nodo<T> nodo, T elemento) {
+
+        if (nodo != null) {
+            if (elemento.compareTo(nodo.getValor()) == 0) {
                 return true;
-            }else{
-                return elementoExiste(nodo.getDerecha(),elemento);
+            } else {
+                if (elemento.compareTo(nodo.getValor()) < 0) {
+                    return elementoExiste(nodo.getIzquierda(), elemento);
+                } else {
+                    return elementoExiste(nodo.getDerecha(), elemento);
+                }
             }
         }
+        return false;
+    }
+
+    public void eliminar(T dato) {
+        this.raiz = eliminar(dato, raiz);
+
+    }
+
+    private Nodo<T> eliminar(T dato, Nodo<T> nodo) {
+        if (nodo == null) {
+            return null;
+        }
+        if (nodo.getValor().compareTo(dato) == 0) {
+            return unir(nodo.getIzquierda(), nodo.getDerecha());
+        }
+        if (dato.compareTo(nodo.getValor()) < 0) {
+            nodo.setIzquierda(eliminar(dato, nodo.getIzquierda()));
+        } else {
+            nodo.setDerecha(eliminar(dato, nodo.getDerecha()));
+        }
+        return nodo;
+    }
+
+    private Nodo<T> unir(Nodo nodoIzquierdo, Nodo nodoDerecho) {
+        if (nodoIzquierdo == null) {
+            return nodoDerecho;
+        }
+        if (nodoDerecho == null) {
+            return nodoIzquierdo;
+        }
+        Nodo<T> centro = unir(nodoIzquierdo.getDerecha(), nodoDerecho.getIzquierda());
+        nodoIzquierdo.setDerecha(centro);
+        nodoDerecho.setIzquierda(nodoIzquierdo);
+        return nodoDerecho;
     }
 
     public void inOrden() {
@@ -225,22 +281,18 @@ public class ArbolBinario<T> {
         return hojas;
     }
 
-
-
     public int getNodosInternos() {
         numNodosInternos(raiz);
         return nodosInternos;
     }
 
-
     public int getSumatoria() {
-        sumatoria(raiz);
+        // sumatoria(raiz);
         return sumatoria;
     }
 
-    
-    public boolean existe(T elemento){
+    public boolean existe(T elemento) {
         return elementoExiste(raiz, elemento);
     }
-    
+
 }
