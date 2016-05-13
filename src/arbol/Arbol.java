@@ -24,7 +24,7 @@ public class Arbol {
         int NUMERO_MAXIMO = 10;
 
         Random rng = new Random();
-        Set<Integer> generated = new LinkedHashSet<Integer>();
+        Set<Integer> generated = new LinkedHashSet<>();
 
         while (generated.size() < NUMEROS_REQUERIDOS) {
             Integer next = rng.nextInt(NUMERO_MAXIMO) + 1;
@@ -32,13 +32,13 @@ public class Arbol {
             generated.add(next);
         }
 
-        ArbolBinario aBinario = new ArbolBinario();
+        ArbolBinario<Integer> aBinario = new ArbolBinario<>();
 
         //int numeros[] = {1,2,3,4,8,90,10,51,20,45,10,30,150};
         Object numeros[] = generated.toArray();
 
         for (Object numero : numeros) {
-            aBinario.insertar(numero);
+            aBinario.insertar((Integer) numero);
         }
 
         aBinario.imprimirArbolBinario(aBinario.getRaiz(), 0);
@@ -53,8 +53,8 @@ public class Arbol {
         System.out.println("-> Peso = " + aBinario.getPeso());
         System.out.println("-> Numero de Hojas = " + aBinario.getHojas());
         System.out.println("-> Numero de Nodos Internos = " + aBinario.getNodosInternos());
-        System.out.println("-> Sumatoria Elementos = " + aBinario.getSumatoria());
-        System.out.println("-> Elemento Existe? = " + aBinario.existe(3));
+        System.out.println("-> Sumatoria Elementos = " + aBinario.obtenerSumatoria());
+        System.out.println("-> Elemento Existe? = " + aBinario.existe(18));
         
         
         /**
