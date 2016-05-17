@@ -327,18 +327,36 @@ public class ArbolBinario<T extends Comparable> implements Iterable<T> {
     }
 
     public Iterator<T> iterator() {
-        return new IteradorPreOrden();
+        return new IteradorArbol();
     }
 
     //pre-orden
-    class IteradorPreOrden implements Iterator<T> {
+    class IteradorArbol implements Iterator<T> {
 
-        Stack<Nodo<T>> nodosVisitados = new Stack<Nodo<T>>();
+        protected Stack<Nodo<T>> nodosVisitados;
+        protected boolean preOrden;
+        protected boolean inOden;
+        protected boolean posOrden;
 
-        public IteradorPreOrden() {
-            if (raiz != null) {
-                nodosVisitados.push(raiz);
+        public IteradorArbol() {
+
+            posOrden = true;
+
+            nodosVisitados = new Stack<Nodo<T>>();
+
+            if (preOrden) {
+                if (raiz != null) {
+                    nodosVisitados.push(raiz);
+                }
             }
+            if (inOden) {
+                apilarHijosIzquierda(raiz);
+            }
+
+            if (posOrden) {
+                encontrarSiguienteHoja(raiz);
+            }
+
         }
 
         @Override
@@ -347,46 +365,78 @@ public class ArbolBinario<T extends Comparable> implements Iterable<T> {
         }
 
         @Override
-//        public T next() {
-//            Nodo<T> actual = nodosVisitados.peek();
-//            if (actual.getIzquierda() != null) {
-//                nodosVisitados.push(actual.getIzquierda());
-//            } else {
-//                Nodo<T> temporal = nodosVisitados.pop();
-//                while (temporal.getDerecha() == null) {
-//                    if (nodosVisitados.isEmpty()) {
-//                        return actual.getValor();
-//                    }
-//                    temporal = nodosVisitados.pop();
-//                }
-//
-//                nodosVisitados.push(temporal.getDerecha());
-//            }
-//            
-//            return actual.getValor();
-//        }
-
         public T next() {
-            Nodo<T> actual = nodosVisitados.peek();
-            if (actual.getIzquierda() != null) {
-                nodosVisitados.push(actual.getIzquierda());
+            if (preOrden) {
+                return preOrdenNext();
+            } else if (inOden) {
+                return inOrdenNext();
+            } else if (posOrden) {
+                return posOrdenNext();
             } else {
-                Nodo<T> temporal = nodosVisitados.pop();
-                while (temporal.getDerecha() == null) {
-                    if (nodosVisitados.isEmpty()) {
-                        return actual.getValor();
-                    }
-                    temporal = nodosVisitados.pop();
-                }
+                return null;
+            }
 
-                nodosVisitados.push(temporal.getDerecha());
-            }                         
+        }
+
+        public T preOrdenNext() {
+            Nodo<T> res = nodosVisitados.pop();
+            if (res.getDerecha() != null) {
+                nodosVisitados.push(res.getDerecha());
+            }
+            if (res.getIzquierda() != null) {
+                nodosVisitados.push(res.getIzquierda());
+            }
+
+            return res.getValor();
+        }
+
+        public T posOrdenNext() {
+            Nodo<T> actual = nodosVisitados.pop();
+            if (!nodosVisitados.isEmpty()) {
+                Nodo<T> top = nodosVisitados.peek();
+                if (actual == top.getIzquierda()) {
+                    // encontrar siguiente hoja en el subarbol derecho 
+                    encontrarSiguienteHoja(top.getDerecha());
+                }
+            }
 
             return actual.getValor();
         }
-    }
 
-//		public int getPosicion() {
-//			return posicion;
-//		}
+        public T inOrdenNext() {
+            Nodo<T> actual = nodosVisitados.pop();
+            apilarHijosIzquierda(actual.getDerecha());
+            return actual.getValor();
+        }
+
+        /**
+         * Apilar nodo y sus hijos izquierdos a la pila
+         *
+         * @param cur
+         */
+        private void apilarHijosIzquierda(Nodo<T> cur) {
+            while (cur != null) {
+                nodosVisitados.push(cur);
+                cur = cur.getIzquierda();
+            }
+        }
+
+        /**
+         * encontrar la primera hoja en un árbol con raíz en corte y almacenar
+         * los nodos intermedios
+         *
+         * @param cur
+         */
+        private void encontrarSiguienteHoja(Nodo<T> cur) {
+            while (cur != null) {
+                nodosVisitados.push(cur);
+                if (cur.getIzquierda() != null) {
+                    cur = cur.getIzquierda();
+                } else {
+                    cur = cur.getDerecha();
+                }
+            }
+        }
+
+    }
 }
