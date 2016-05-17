@@ -43,19 +43,25 @@ public class Arbol {
 
         aBinario.imprimirArbolBinario(aBinario.getRaiz(), 0);
 
-//        aBinario.inOrden();
-//        System.out.println("************************ ");
-//        aBinario.posOrden();
-//        System.out.println("************************ ");
-//        aBinario.preOrden();        
-//        System.out.println("************************ ");
+       aBinario.inOrden();
+        System.out.println("************************ ");
+       aBinario.posOrden();
+        System.out.println("************************ ");
+        aBinario.preOrden();        
+       System.out.println("************************ ");
 //        
         System.out.println("-> Peso = " + aBinario.getPeso());
         System.out.println("-> Numero de Hojas = " + aBinario.getHojas());
         System.out.println("-> Numero de Nodos Internos = " + aBinario.getNodosInternos());
         System.out.println("-> Sumatoria Elementos = " + aBinario.obtenerSumatoria());
         System.out.println("-> Elemento Existe? = " + aBinario.existe(18));
+        System.out.println("-> Niveles = " + aBinario.niveles());
+        System.out.println("-> Altura  = " + aBinario.altura());
         
+        
+        for (Integer i : aBinario){
+            System.out.println("i = " + i);
+        }
         
         /**
          * Nodos Hojas X Nodos Internos x Peso x Suma x Eliminar Si existe

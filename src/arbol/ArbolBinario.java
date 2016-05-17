@@ -1,11 +1,14 @@
 package arbol;
 
+import java.util.Iterator;
+import java.util.Stack;
+
 /**
  *
  * @author Admin
  * @param <T>
  */
-public class ArbolBinario<T extends Comparable> {
+public class ArbolBinario<T extends Comparable> implements Iterable<T> {
 
     private Nodo raiz;
     private int peso;
@@ -49,20 +52,20 @@ public class ArbolBinario<T extends Comparable> {
         this.hojas = hojas;
     }
 
-    public void imprimirArbolBinario(Nodo raiz, int level) {
+    public void imprimirArbolBinario(Nodo raiz, int nivel) {
         if (raiz == null) {
             return;
         }
-        imprimirArbolBinario(raiz.getDerecha(), level + 1);
-        if (level != 0) {
-            for (int i = 0; i < level - 1; i++) {
+        imprimirArbolBinario(raiz.getDerecha(), nivel + 1);
+        if (nivel != 0) {
+            for (int i = 0; i < nivel - 1; i++) {
                 System.out.print("|\t");
             }
             System.out.println("|-------" + raiz.getValor());
         } else {
             System.out.println(raiz.getValor());
         }
-        imprimirArbolBinario(raiz.getIzquierda(), level + 1);
+        imprimirArbolBinario(raiz.getIzquierda(), nivel + 1);
     }
 
     /**
@@ -75,7 +78,7 @@ public class ArbolBinario<T extends Comparable> {
             return;
         }
         inOrden(nodo.getIzquierda());
-        System.out.println("" + nodo.getValor());
+        System.out.print(nodo.getValor() + ",");
         inOrden(nodo.getDerecha());
     }
 
@@ -88,9 +91,9 @@ public class ArbolBinario<T extends Comparable> {
         if (nodo == null) {
             return;
         }
-        System.out.println("" + nodo.getValor());
-        inOrden(nodo.getIzquierda());
-        inOrden(nodo.getDerecha());
+        System.out.print(nodo.getValor() + ",");
+        preOrden(nodo.getIzquierda());
+        preOrden(nodo.getDerecha());
     }
 
     /**
@@ -104,7 +107,7 @@ public class ArbolBinario<T extends Comparable> {
         }
         posOrden(nodo.getIzquierda());
         posOrden(nodo.getDerecha());
-        System.out.println("" + nodo.getValor());
+        System.out.print(nodo.getValor() + ",");
     }
 
     /**
@@ -186,6 +189,34 @@ public class ArbolBinario<T extends Comparable> {
         }
         return (sumatoria(nodo.getIzquierda()) + sumatoria(nodo.getDerecha()) + ((Number) nodo.getValor()).doubleValue());
 
+    }
+
+    public int niveles() {
+        return niveles(raiz);
+    }
+
+    private int niveles(Nodo<T> r) {
+        if (r == null) {
+            return 0;
+        } else {
+            if (r.getIzquierda() == null && r.getDerecha() == null) {
+                return 1;
+            } else {
+                return niveles(r.getIzquierda()) + niveles(r.getDerecha());
+            }
+        }
+    }
+
+    public int altura() {
+        return altura(raiz);
+    }
+
+    public int altura(Nodo<T> r) {
+        if (r == null) {
+            return -1;
+        } else {
+            return 1 + Math.max(altura(r.getIzquierda()), altura(r.getDerecha()));
+        }
     }
 
     private boolean elementoExiste(Nodo<T> nodo, T elemento) {
@@ -295,4 +326,67 @@ public class ArbolBinario<T extends Comparable> {
         return elementoExiste(raiz, elemento);
     }
 
+    public Iterator<T> iterator() {
+        return new IteradorPreOrden();
+    }
+
+    //pre-orden
+    class IteradorPreOrden implements Iterator<T> {
+
+        Stack<Nodo<T>> nodosVisitados = new Stack<Nodo<T>>();
+
+        public IteradorPreOrden() {
+            if (raiz != null) {
+                nodosVisitados.push(raiz);
+            }
+        }
+
+        @Override
+        public boolean hasNext() {
+            return !nodosVisitados.isEmpty();
+        }
+
+        @Override
+//        public T next() {
+//            Nodo<T> actual = nodosVisitados.peek();
+//            if (actual.getIzquierda() != null) {
+//                nodosVisitados.push(actual.getIzquierda());
+//            } else {
+//                Nodo<T> temporal = nodosVisitados.pop();
+//                while (temporal.getDerecha() == null) {
+//                    if (nodosVisitados.isEmpty()) {
+//                        return actual.getValor();
+//                    }
+//                    temporal = nodosVisitados.pop();
+//                }
+//
+//                nodosVisitados.push(temporal.getDerecha());
+//            }
+//            
+//            return actual.getValor();
+//        }
+
+        public T next() {
+            Nodo<T> actual = nodosVisitados.peek();
+            if (actual.getIzquierda() != null) {
+                nodosVisitados.push(actual.getIzquierda());
+            } else {
+                Nodo<T> temporal = nodosVisitados.pop();
+                while (temporal.getDerecha() == null) {
+                    if (nodosVisitados.isEmpty()) {
+                        return actual.getValor();
+                    }
+                    temporal = nodosVisitados.pop();
+                }
+
+                nodosVisitados.push(temporal.getDerecha());
+            }                         
+
+            return actual.getValor();
+        }
+    }
+
+//		public int getPosicion() {
+//			return posicion;
+//		}
 }
