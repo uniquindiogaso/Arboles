@@ -326,21 +326,30 @@ public class ArbolBinario<T extends Comparable> implements Iterable<T> {
         return elementoExiste(raiz, elemento);
     }
 
+    @Override
     public Iterator<T> iterator() {
-        return new IteradorArbol();
+        return new IteradorArbol(true, false, false);
     }
 
-    //pre-orden
+    public Iterator<T> iteratorPre() {
+        return new IteradorArbol(false, true, false);
+    }
+    
+    public Iterator<T> iteratorPos() {
+        return new IteradorArbol(false, true, false);
+    }
+
     class IteradorArbol implements Iterator<T> {
 
         protected Stack<Nodo<T>> nodosVisitados;
         protected boolean preOrden;
-        protected boolean inOden;
+        protected boolean inOrden;
         protected boolean posOrden;
 
-        public IteradorArbol() {
-
-            posOrden = true;
+        public IteradorArbol(boolean inOrden, boolean preOrden, boolean posOrden) {
+            this.preOrden = preOrden;
+            this.inOrden = inOrden;
+            this.posOrden = posOrden;
 
             nodosVisitados = new Stack<Nodo<T>>();
 
@@ -349,7 +358,7 @@ public class ArbolBinario<T extends Comparable> implements Iterable<T> {
                     nodosVisitados.push(raiz);
                 }
             }
-            if (inOden) {
+            if (this.inOrden) {
                 apilarHijosIzquierda(raiz);
             }
 
@@ -368,7 +377,7 @@ public class ArbolBinario<T extends Comparable> implements Iterable<T> {
         public T next() {
             if (preOrden) {
                 return preOrdenNext();
-            } else if (inOden) {
+            } else if (inOrden) {
                 return inOrdenNext();
             } else if (posOrden) {
                 return posOrdenNext();
@@ -379,24 +388,24 @@ public class ArbolBinario<T extends Comparable> implements Iterable<T> {
         }
 
         public T preOrdenNext() {
-            Nodo<T> res = nodosVisitados.pop();
-            if (res.getDerecha() != null) {
-                nodosVisitados.push(res.getDerecha());
+            Nodo<T> actual = nodosVisitados.pop();
+            if (actual.getDerecha() != null) {
+                nodosVisitados.push(actual.getDerecha());
             }
-            if (res.getIzquierda() != null) {
-                nodosVisitados.push(res.getIzquierda());
+            if (actual.getIzquierda() != null) {
+                nodosVisitados.push(actual.getIzquierda());
             }
 
-            return res.getValor();
+            return actual.getValor();
         }
 
         public T posOrdenNext() {
             Nodo<T> actual = nodosVisitados.pop();
             if (!nodosVisitados.isEmpty()) {
-                Nodo<T> top = nodosVisitados.peek();
-                if (actual == top.getIzquierda()) {
+                Nodo<T> temp = nodosVisitados.peek();
+                if (actual == temp.getIzquierda()) {
                     // encontrar siguiente hoja en el subarbol derecho 
-                    encontrarSiguienteHoja(top.getDerecha());
+                    encontrarSiguienteHoja(temp.getDerecha());
                 }
             }
 
@@ -412,12 +421,12 @@ public class ArbolBinario<T extends Comparable> implements Iterable<T> {
         /**
          * Apilar nodo y sus hijos izquierdos a la pila
          *
-         * @param cur
+         * @param actual
          */
-        private void apilarHijosIzquierda(Nodo<T> cur) {
-            while (cur != null) {
-                nodosVisitados.push(cur);
-                cur = cur.getIzquierda();
+        private void apilarHijosIzquierda(Nodo<T> actual) {
+            while (actual != null) {
+                nodosVisitados.push(actual);
+                actual = actual.getIzquierda();
             }
         }
 
@@ -425,15 +434,15 @@ public class ArbolBinario<T extends Comparable> implements Iterable<T> {
          * encontrar la primera hoja en un árbol con raíz en corte y almacenar
          * los nodos intermedios
          *
-         * @param cur
+         * @param actual
          */
-        private void encontrarSiguienteHoja(Nodo<T> cur) {
-            while (cur != null) {
-                nodosVisitados.push(cur);
-                if (cur.getIzquierda() != null) {
-                    cur = cur.getIzquierda();
+        private void encontrarSiguienteHoja(Nodo<T> actual) {
+            while (actual != null) {
+                nodosVisitados.push(actual);
+                if (actual.getIzquierda() != null) {
+                    actual = actual.getIzquierda();
                 } else {
-                    cur = cur.getDerecha();
+                    actual = actual.getDerecha();
                 }
             }
         }
